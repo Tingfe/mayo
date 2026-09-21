@@ -1,0 +1,223 @@
+name: Build macOS ARM64 package
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: "Git ref to build (branch, tag, or commit)"
+        required: false
+        default: "develop"
+  push:
+    branches:
+      - develop
+    paths:
+      - ".github/workflows/build_macos_arm64_package.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-macos-arm64:
+    name: Build portable macOS ARM64 package
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
+
+      - name: Show runner architecture
+        run: |
+          uname -a
+          uname -m
+          sw_vers
+
+      - name: Install build dependencies
+        run: |
+          brew install qt@6 opencascade assimp
+
+      - name: Configure
+        run: |
+          QT_PREFIX="$(brew --prefix qt@6)"
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DMayo_BuildTests=OFF \
+            -DMayo_BuildPluginAssimp=ON \
+            -DQT_DIR="$QT_PREFIX/lib/cmake/Qt6"
+
+      - name: Build
+        run: |
+          cmake --build build --config Release --parallel "$(sysctl -n hw.ncpu)"
+          test -d build/mayo.app
+          file build/mayo.app/Contents/MacOS/mayo
+          lipo -archs build/mayo.app/Contents/MacOS/mayo
+
+      - name: Deploy Qt frameworks and plugins
+        run: |
+          QT_PREFIX="$(brew --prefix qt@6)"
+          "$QT_PREFIX/bin/macdeployqt" build/mayo.app -always-overwrite -verbose=2
+
+      - name: Bundle non-system Homebrew libraries
+        shell: bash
+        run: |
+          python3 <<'PY'
+          import os
+          import shutil
+          import subprocess
+          from pathlib import Path
+
+          app = Path("build/mayo.app").resolve()
+          frameworks = app / "Contents" / "Frameworks"
+          frameworks.mkdir(parents=True, exist_ok=True)
+
+          def run(*args, check=True):
+              p = subprocess.run(args, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+              if check and p.returncode != 0:
+                  raise RuntimeError(
+                      "Command failed: " + " ".join(args) + "\n" + p.stdout + "\n" + p.stderr
+                  )
+              return p
+
+          def is_macho(path: Path) -> bool:
+              if not path.is_file() or path.is_symlink():
+                  return False
+              p = run("file", str(path), check=False)
+              return "Mach-O" in p.stdout
+
+          def dependencies(path: Path):
+              p = run("otool", "-L", str(path))
+              deps = []
+              for line in p.stdout.splitlines()[1:]:
+                  line = line.strip()
+                  if not line:
+                      continue
+                  deps.append(line.split(" (compatibility version", 1)[0])
+              return deps
+
+          def external_abs(dep: str) -> bool:
+              if not dep.startswith("/"):
+                  return False
+              if dep.startswith("/System/Library/") or dep.startswith("/usr/lib/"):
+                  return False
+              try:
+                  p = Path(dep).resolve()
+                  if app in p.parents:
+                      return False
+              except Exception:
+                  pass
+              return True
+
+          def copy_dependency(dep: str) -> Path:
+              src = Path(dep)
+              if not src.exists():
+                  raise FileNotFoundError(f"Dependency does not exist: {dep}")
+              dst = frameworks / src.name
+              if not dst.exists():
+                  print(f"Bundling: {src} -> {dst}")
+                  shutil.copy2(src.resolve(), dst)
+                  os.chmod(dst, 0o755)
+              new_id = f"@executable_path/../Frameworks/{dst.name}"
+              run("install_name_tool", "-id", new_id, str(dst), check=False)
+              return dst
+
+          queue = [p for p in app.rglob("*") if is_macho(p)]
+          seen = set()
+
+          while queue:
+              binary = queue.pop(0)
+              key = str(binary)
+              if key in seen or not binary.exists():
+                  continue
+              seen.add(key)
+
+              for dep in dependencies(binary):
+                  # Skip a dylib's own install-name entry.
+                  if Path(dep).name == binary.name:
+                      continue
+                  if not external_abs(dep):
+                      continue
+
+                  dst = copy_dependency(dep)
+                  new_ref = f"@executable_path/../Frameworks/{dst.name}"
+                  print(f"Rewriting in {binary}: {dep} -> {new_ref}")
+                  run("install_name_tool", "-change", dep, new_ref, str(binary))
+                  if str(dst) not in seen:
+                      queue.append(dst)
+
+          print("\nBundled external libraries:")
+          for p in sorted(frameworks.iterdir()):
+              if p.is_file():
+                  print(" -", p.name)
+          PY
+
+      - name: Verify no absolute non-system dependencies remain
+        shell: bash
+        run: |
+          python3 <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          app = Path("build/mayo.app").resolve()
+          bad = []
+
+          for path in app.rglob("*"):
+              if not path.is_file() or path.is_symlink():
+                  continue
+              f = subprocess.run(["file", str(path)], text=True, capture_output=True)
+              if "Mach-O" not in f.stdout:
+                  continue
+              o = subprocess.run(["otool", "-L", str(path)], text=True, capture_output=True, check=True)
+              for line in o.stdout.splitlines()[1:]:
+                  dep = line.strip().split(" (compatibility version", 1)[0]
+                  if not dep.startswith("/"):
+                      continue
+                  if dep.startswith("/System/Library/") or dep.startswith("/usr/lib/"):
+                      continue
+                  if dep.startswith(str(app)):
+                      continue
+                  bad.append((str(path), dep))
+
+          if bad:
+              print("External absolute dependencies remain:")
+              for binary, dep in bad:
+                  print(f"  {binary}\n    -> {dep}")
+              raise SystemExit(1)
+
+          print("Dependency check passed: no external absolute non-system dylibs remain.")
+          PY
+
+      - name: Ad-hoc sign application bundle
+        run: |
+          codesign --force --deep --sign - --timestamp=none build/mayo.app
+          codesign --verify --deep --strict --verbose=2 build/mayo.app
+
+      - name: Create ZIP and DMG
+        run: |
+          mkdir -p dist/dmg-root
+          ditto build/mayo.app "dist/dmg-root/Mayo.app"
+          ln -s /Applications "dist/dmg-root/Applications"
+
+          ditto -c -k --sequesterRsrc --keepParent \
+            "dist/dmg-root/Mayo.app" \
+            "dist/Mayo-macOS-arm64.zip"
+
+          hdiutil create \
+            -volname "Mayo" \
+            -srcfolder "dist/dmg-root" \
+            -ov \
+            -format UDZO \
+            "dist/Mayo-macOS-arm64.dmg"
+
+          shasum -a 256 dist/Mayo-macOS-arm64.zip dist/Mayo-macOS-arm64.dmg | tee dist/SHA256SUMS.txt
+
+      - name: Upload macOS packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mayo-macOS-arm64
+          path: |
+            dist/Mayo-macOS-arm64.zip
+            dist/Mayo-macOS-arm64.dmg
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30

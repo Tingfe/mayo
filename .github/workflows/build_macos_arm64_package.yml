@@ -16,7 +16,7 @@ on:
       - "i18n/mayo.qrc"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-macos-arm64:
@@ -238,3 +238,29 @@ jobs:
             dist/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[publish-macos]')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: v0.11.0-dev-macos-arm64-1
+        run: |
+          gh --version
+          gh release create "$RELEASE_TAG" \
+            dist/Mayo-macOS-arm64.dmg \
+            dist/Mayo-macOS-arm64.zip \
+            dist/SHA256SUMS.txt \
+            --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
+            --title "Mayo 0.11.0-dev macOS ARM64 (Chinese enhanced)" \
+            --notes "Personal-use Apple Silicon build from Mayo develop branch.
+
+Includes:
+- Native macOS ARM64 build
+- Qt 6 / OpenCascade / Assimp runtime dependencies
+- Refined Simplified Chinese translation
+- Ad-hoc code signing
+- DMG and ZIP packages
+- SHA-256 checksums
+
+This build is not notarized with an Apple Developer ID. On first launch, macOS may require opening it via Finder > right-click > Open, or allowing it in System Settings > Privacy & Security."

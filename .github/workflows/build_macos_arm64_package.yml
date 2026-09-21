@@ -253,14 +253,4 @@ jobs:
             --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
             --title "Mayo 0.11.0-dev macOS ARM64 (Chinese enhanced)" \
-            --notes "Personal-use Apple Silicon build from Mayo develop branch.
-
-Includes:
-- Native macOS ARM64 build
-- Qt 6 / OpenCascade / Assimp runtime dependencies
-- Refined Simplified Chinese translation
-- Ad-hoc code signing
-- DMG and ZIP packages
-- SHA-256 checksums
-
-This build is not notarized with an Apple Developer ID. On first launch, macOS may require opening it via Finder > right-click > Open, or allowing it in System Settings > Privacy & Security."
+            --notes "Personal-use Apple Silicon build from Mayo develop branch. Includes Qt 6, OpenCascade, Assimp runtime dependencies, refined Simplified Chinese translation, ad-hoc code signing, DMG/ZIP packages and SHA-256 checksums. This build is not notarized with an Apple Developer ID."

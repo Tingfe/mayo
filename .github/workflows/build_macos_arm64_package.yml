@@ -12,6 +12,8 @@ on:
       - develop
     paths:
       - ".github/workflows/build_macos_arm64_package.yml"
+      - "i18n/mayo_zh.ts"
+      - "i18n/mayo.qrc"
 
 permissions:
   contents: read
@@ -36,6 +38,17 @@ jobs:
       - name: Install build dependencies
         run: |
           brew install qt@6 opencascade assimp
+
+      - name: Compile Simplified Chinese translation
+        run: |
+          QT_PREFIX="$(brew --prefix qt@6)"
+          LRELEASE="$QT_PREFIX/bin/lrelease"
+          if [ ! -x "$LRELEASE" ]; then
+            LRELEASE="$QT_PREFIX/libexec/lrelease"
+          fi
+          test -x "$LRELEASE"
+          "$LRELEASE" i18n/mayo_zh.ts -qm i18n/mayo_zh.qm
+          test -s i18n/mayo_zh.qm
 
       - name: Configure
         run: |

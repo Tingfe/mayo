@@ -185,6 +185,10 @@ jobs:
                   dep = line.strip().split(" (compatibility version", 1)[0]
                   if not dep.startswith("/"):
                       continue
+                  # otool -L lists a dylib/framework's own install-name as an entry.
+                  # It is metadata, not an unresolved runtime dependency.
+                  if Path(dep).name == path.name:
+                      continue
                   if dep.startswith("/System/Library/") or dep.startswith("/usr/lib/"):
                       continue
                   if dep.startswith(str(app)):

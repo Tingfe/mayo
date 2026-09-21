@@ -103,9 +103,8 @@ jobs:
               deps = []
               for line in p.stdout.splitlines()[1:]:
                   line = line.strip()
-                  if not line:
-                      continue
-                  deps.append(line.split(" (compatibility version", 1)[0])
+                  if line:
+                      deps.append(line.split(" (compatibility version", 1)[0])
               return deps
 
           def external_abs(dep: str) -> bool:
@@ -121,6 +120,10 @@ jobs:
                   pass
               return True
 
+          def loader_ref(binary: Path, target: Path) -> str:
+              rel = os.path.relpath(target, binary.parent).replace(os.sep, "/")
+              return f"@loader_path/{rel}"
+
           def copy_dependency(dep: str) -> Path:
               src = Path(dep)
               if not src.exists():
@@ -130,10 +133,13 @@ jobs:
                   print(f"Bundling: {src} -> {dst}")
                   shutil.copy2(src.resolve(), dst)
                   os.chmod(dst, 0o755)
-              new_id = f"@executable_path/../Frameworks/{dst.name}"
-              run("install_name_tool", "-id", new_id, str(dst), check=False)
+              # Keep a conventional install-name; dependants are rewritten below
+              # to concrete @loader_path references inside the application bundle.
+              run("install_name_tool", "-id", f"@rpath/{dst.name}", str(dst), check=False)
               return dst
 
+          # Pass 1: recursively copy every absolute non-system dependency into
+          # Contents/Frameworks and rewrite the referencing binary.
           queue = [p for p in app.rglob("*") if is_macho(p)]
           seen = set()
 
@@ -152,11 +158,27 @@ jobs:
                       continue
 
                   dst = copy_dependency(dep)
-                  new_ref = f"@executable_path/../Frameworks/{dst.name}"
-                  print(f"Rewriting in {binary}: {dep} -> {new_ref}")
+                  new_ref = loader_ref(binary, dst)
+                  print(f"Rewriting absolute dependency in {binary}: {dep} -> {new_ref}")
                   run("install_name_tool", "-change", dep, new_ref, str(binary))
-                  if str(dst) not in seen:
-                      queue.append(dst)
+                  queue.append(dst)
+
+          # Pass 2: Homebrew OpenCascade libraries commonly reference each other
+          # as @rpath/libTK*.dylib. Those references worked on the build runner
+          # because Homebrew supplied LC_RPATH entries, but fail on another Mac.
+          # Rewrite any bundled dylib reached through @rpath to a direct
+          # @loader_path reference inside Contents/Frameworks.
+          machos = [p for p in app.rglob("*") if is_macho(p)]
+          for binary in machos:
+              for dep in dependencies(binary):
+                  if not dep.startswith("@rpath/") or ".framework/" in dep:
+                      continue
+                  candidate = frameworks / Path(dep).name
+                  if not candidate.exists() or candidate.resolve() == binary.resolve():
+                      continue
+                  new_ref = loader_ref(binary, candidate)
+                  print(f"Rewriting rpath dependency in {binary}: {dep} -> {new_ref}")
+                  run("install_name_tool", "-change", dep, new_ref, str(binary))
 
           print("\nBundled external libraries:")
           for p in sorted(frameworks.iterdir()):
@@ -183,11 +205,16 @@ jobs:
               o = subprocess.run(["otool", "-L", str(path)], text=True, capture_output=True, check=True)
               for line in o.stdout.splitlines()[1:]:
                   dep = line.strip().split(" (compatibility version", 1)[0]
-                  if not dep.startswith("/"):
-                      continue
                   # otool -L lists a dylib/framework's own install-name as an entry.
                   # It is metadata, not an unresolved runtime dependency.
                   if Path(dep).name == path.name:
+                      continue
+
+                  if dep.startswith("@rpath/") and dep.endswith(".dylib"):
+                      bad.append((str(path), dep))
+                      continue
+
+                  if not dep.startswith("/"):
                       continue
                   if dep.startswith("/System/Library/") or dep.startswith("/usr/lib/"):
                       continue
@@ -208,6 +235,12 @@ jobs:
         run: |
           codesign --force --deep --sign - --timestamp=none build/mayo.app
           codesign --verify --deep --strict --verbose=2 build/mayo.app
+
+      - name: Smoke test packaged application
+        run: |
+          build/mayo.app/Contents/MacOS/mayo --version
+          build/mayo.app/Contents/MacOS/mayo --help >/tmp/mayo-help.txt
+          test -s /tmp/mayo-help.txt
 
       - name: Create ZIP and DMG
         run: |
@@ -243,7 +276,7 @@ jobs:
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[publish-macos]')
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.11.0-dev-macos-arm64-1
+          RELEASE_TAG: v0.11.0-dev-macos-arm64-2
         run: |
           gh --version
           gh release create "$RELEASE_TAG" \
@@ -252,5 +285,5 @@ jobs:
             dist/SHA256SUMS.txt \
             --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
-            --title "Mayo 0.11.0-dev macOS ARM64 (Chinese enhanced)" \
+            --title "Mayo 0.11.0-dev macOS ARM64 (Chinese enhanced, rpath fix)" \
             --notes "Personal-use Apple Silicon build from Mayo develop branch. Includes Qt 6, OpenCascade, Assimp runtime dependencies, refined Simplified Chinese translation, ad-hoc code signing, DMG/ZIP packages and SHA-256 checksums. This build is not notarized with an Apple Developer ID."

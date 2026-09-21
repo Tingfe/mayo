@@ -84,7 +84,7 @@
     <message>
         <location filename="../src/app/app_module_properties.cpp" line="49"/>
         <source>meshDefaults</source>
-        <translation>网格默认值</translation>
+        <translation>网格化默认参数</translation>
     </message>
     <message>
         <location filename="../src/app/app_module_properties.cpp" line="41"/>
@@ -182,7 +182,7 @@ If activated, deflection used for the polygonalisation of each edge will be `Cho
     <message>
         <location filename="../src/app/app_module_properties.cpp" line="248"/>
         <source>Show or hide by default the trihedron centered at world origin. This doesn&apos;t affect 3D view of currently opened documents</source>
-        <translation>默认显示或隐藏位于世界原点的三面体。此设置不影响当前已打开文档的 3D 视图</translation>
+        <translation>默认显示或隐藏位于世界坐标原点的坐标三轴。此设置不影响当前已打开文档的 3D 视图</translation>
     </message>
     <message>
         <location filename="../src/app/app_module_properties.cpp" line="252"/>
@@ -247,12 +247,12 @@ If activated, deflection used for the polygonalisation of each edge will be `Cho
     <message>
         <location filename="../src/app/app_module_properties.h" line="78"/>
         <source>meshingQuality</source>
-        <translation>质量</translation>
+        <translation>网格化质量</translation>
     </message>
     <message>
         <location filename="../src/app/app_module_properties.h" line="79"/>
         <source>meshingChordalDeflection</source>
-        <translation>弦偏差</translation>
+        <translation>弦高偏差</translation>
     </message>
     <message>
         <location filename="../src/app/app_module_properties.h" line="80"/>
@@ -272,7 +272,7 @@ If activated, deflection used for the polygonalisation of each edge will be `Cho
     <message>
         <location filename="../src/app/app_module_properties.h" line="85"/>
         <source>defaultShowOriginTrihedron</source>
-        <translation>默认显示原点三面体</translation>
+        <translation>默认显示原点坐标三轴</translation>
     </message>
     <message>
         <location filename="../src/app/app_module_properties.h" line="86"/>
@@ -337,32 +337,32 @@ If activated, deflection used for the polygonalisation of each edge will be `Cho
     <message>
         <location filename="messages.cpp" line="21"/>
         <source>VeryCoarse</source>
-        <translation>非常粗糙</translation>
+        <translation>极粗</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="22"/>
         <source>Coarse</source>
-        <translation>粗糙</translation>
+        <translation>粗</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="23"/>
         <source>Normal</source>
-        <translation>正常</translation>
+        <translation>标准</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="24"/>
         <source>Precise</source>
-        <translation>精确</translation>
+        <translation>精细</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="25"/>
         <source>VeryPrecise</source>
-        <translation>非常精确</translation>
+        <translation>高精细</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="26"/>
         <source>UserDefined</source>
-        <translation>用户自定义</translation>
+        <translation>自定义</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="28"/>
@@ -519,12 +519,12 @@ If activated, deflection used for the polygonalisation of each edge will be `Cho
     <message>
         <location filename="../src/app/commands_display.cpp" line="174"/>
         <source>Show Origin Trihedron</source>
-        <translation>显示原点三面体</translation>
+        <translation>显示原点坐标三轴</translation>
     </message>
     <message>
         <location filename="../src/app/commands_display.cpp" line="175"/>
         <source>Show/Hide Origin Trihedron</source>
-        <translation>显示/隐藏原点三面体</translation>
+        <translation>显示/隐藏原点坐标三轴</translation>
     </message>
     <message>
         <location filename="../src/app/commands_display.cpp" line="217"/>
@@ -912,7 +912,7 @@ If activated, deflection used for the polygonalisation of each edge will be `Cho
     <message>
         <location filename="../src/app/dialog_inspect_xde.cpp" line="125"/>
         <source>ShapeType=%1, ShapeLocation=%2, Evolution=%3</source>
-        <translation>形状类型=%1，形状位置=%2，演变=%3</translation>
+        <translation>形状类型=%1，形状位置=%2，演化=%3</translation>
     </message>
     <message>
         <location filename="../src/app/dialog_inspect_xde.cpp" line="828"/>
@@ -1262,7 +1262,7 @@ Tried:</source>
     <message>
         <location filename="../src/io_dxf/io_dxf.cpp" line="725"/>
         <source>Codepage &apos;{}&apos; not supported</source>
-        <translation type="unfinished"></translation>
+        <translation>不支持代码页“{}”</translation>
     </message>
 </context>
 <context>
@@ -1479,12 +1479,12 @@ Default to background single color</source>
     <message>
         <location filename="messages.cpp" line="72"/>
         <source>Perspective</source>
-        <translation>透视</translation>
+        <translation>透视投影</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="73"/>
         <source>Orthographic</source>
-        <translation>正交</translation>
+        <translation>正交投影</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="75"/>
@@ -1532,44 +1532,46 @@ Default to background single color</source>
     <message>
         <location filename="../src/io_occ/io_occ_brep.cpp" line="61"/>
         <source>Failed to guess OpenCascade BREP ascii/binary format</source>
-        <translation type="unfinished"></translation>
+        <translation>无法识别 OpenCascade BREP 的 ASCII/二进制格式</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_brep.cpp" line="86"/>
         <source>Specifies whether to save shape with or without triangles.
 Has no effect on triangulation-only geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>指定保存形状时是否包含三角剖分数据。
+对仅包含三角剖分的几何体无影响</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_brep.cpp" line="90"/>
         <source>Specifies whether to save triangulation with or without normals.
 Has no effect on triangulation-only geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>指定保存三角剖分时是否包含法向量。
+对仅包含三角剖分的几何体无影响</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_brep.cpp" line="103"/>
         <source>targetFormat</source>
-        <translation type="unfinished">目标格式</translation>
+        <translation>目标格式</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_brep.cpp" line="104"/>
         <source>saveShapeTriangulation</source>
-        <translation type="unfinished"></translation>
+        <translation>保存形状三角剖分</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_brep.cpp" line="105"/>
         <source>saveShapeTriangulationNormals</source>
-        <translation type="unfinished"></translation>
+        <translation>保存三角剖分法向量</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="60"/>
         <source>Ascii</source>
-        <translation type="unfinished">文本</translation>
+        <translation>ASCII 文本</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="61"/>
         <source>Binary</source>
-        <translation type="unfinished">二进制</translation>
+        <translation>二进制</translation>
     </message>
 </context>
 <context>
@@ -1669,7 +1671,7 @@ Has no effect on triangulation-only geometry</source>
     <message>
         <location filename="../src/io_occ/io_occ_gltf_reader.cpp" line="33"/>
         <source>useMeshNameAsFallback</source>
-        <translation>使用网格名称作为备用</translation>
+        <translation>使用网格名称作为备用名称</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_gltf_reader.cpp" line="18"/>
@@ -1840,7 +1842,7 @@ Applicable only if option `{}` is on</source>
     <message>
         <location filename="../src/io_occ/io_occ_iges.cpp" line="89"/>
         <source>surfaceCurveMode</source>
-        <translation>曲面曲线模式</translation>
+        <translation>2D/3D 曲线处理模式</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_iges.cpp" line="90"/>
@@ -1874,15 +1876,13 @@ Concerned entity types are 141 (Boundary), 142 (CurveOnSurface) and 508 (Loop). 
 The processor also decides to re-compute either the 3D or the 2D curve even if both curves are translated successfully and seem to be correct, in case there is inconsistency between them. The processor considers that there is inconsistency if any of the following conditions is satisfied:
 - the number of sub-curves in the 2D curve is different from the number of sub-curves in the 3D curve. This can be either due to different numbers of sub-curves given in the IGES file or because of splitting of curves during translation
 - 3D or 2D curve is a Circular Arc (entity type 100) starting and ending in the same point (note that this case is incorrect according to the IGES standard)</source>
-        <translation>在 2D/3D 表示不一致的情况下，对曲线计算方式的偏好设置（适用于同时具有 2D 和 3D 表示的实体）。
+        <translation>在同时具有 2D 和 3D 表示的实体中，当两者不一致时，用于指定曲线计算的优先方式。
 
-相关实体类型包括 141（边界）、142（曲面曲线）和 508（环）。这些实体表示位于曲面上的轮廓，并被转换为由 TopoDS_Edge 构成的 TopoDS_Wire。每个 TopoDS_Edge 必须同时具有引用该曲面的 3D 曲线和 2D 曲线。
+涉及的实体类型包括 141（Boundary，边界）、142（CurveOnSurface，曲面上的曲线）和 508（Loop，环）。这些实体表示位于曲面上的轮廓，转换后形成由 TopoDS_Edge 组成的 TopoDS_Wire。每个 TopoDS_Edge 必须同时具有一条 3D 曲线和一条引用该曲面的 2D 曲线。
 
-当 2D 和 3D 曲线之间存在不一致时，即使两者均已成功转换且看似正确，处理器也可能选择重新计算 3D 或 2D 曲线。
-
-当满足以下任一条件时，处理器认为存在不一致：
-- 2D 曲线中的子曲线数量与 3D 曲线中的子曲线数量不同。这可能是由于 IGES 文件中定义的子曲线数量不同，或在转换过程中发生曲线分割所致；
-- 3D 或 2D 曲线为圆弧（实体类型 100），且其起点与终点相同（该情况根据 IGES 标准是错误的</translation>
+即使 2D 和 3D 曲线都已成功转换且看似正确，只要二者存在不一致，处理器也可能重新计算其中一条曲线。满足以下任一条件时视为不一致：
+- 2D 曲线的子曲线数量与 3D 曲线不同。这可能是因为 IGES 文件中给出的子曲线数量不同，也可能是转换过程中发生了曲线分割；
+- 3D 或 2D 曲线为圆弧（实体类型 100），且起点与终点相同（根据 IGES 标准，这种情况是不正确的）。</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_iges.cpp" line="59"/>
@@ -2014,7 +2014,7 @@ The processor also decides to re-compute either the 3D or the 2D curve even if b
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="121"/>
         <source>readShapeAspect</source>
-        <translation>读取形状外观</translation>
+        <translation>读取 SHAPE_ASPECT 关联</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="122"/>
@@ -2118,7 +2118,7 @@ This kind of association was used for the representation of hybrid models (i.e. 
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="289"/>
         <source>schema</source>
-        <translation>模式</translation>
+        <translation>STEP 规范版本</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="290"/>
@@ -2158,7 +2158,7 @@ This kind of association was used for the representation of hybrid models (i.e. 
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="297"/>
         <source>headerOriginatingSystem</source>
-        <translation>原始系统（标头）</translation>
+        <translation>源系统（标头）</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="298"/>
@@ -2168,7 +2168,7 @@ This kind of association was used for the representation of hybrid models (i.e. 
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="235"/>
         <source>Version of schema used for the output STEP file</source>
-        <translation>输出 STEP 文件所用的模式版本</translation>
+        <translation>输出 STEP 文件采用的规范版本</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="238"/>
@@ -2215,7 +2215,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="270"/>
         <source>Originating system attribute in STEP header</source>
-        <translation>STEP 标头中的原始系统属性</translation>
+        <translation>STEP 标头中的源系统属性</translation>
     </message>
     <message>
         <location filename="../src/io_occ/io_occ_step.cpp" line="271"/>
@@ -2239,7 +2239,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="messages.cpp" line="63"/>
         <source>Ascii</source>
-        <translation>文本</translation>
+        <translation>ASCII 文本</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="64"/>
@@ -2302,7 +2302,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="messages.cpp" line="69"/>
         <source>Ascii</source>
-        <translation>文本</translation>
+        <translation>ASCII 文本</translation>
     </message>
     <message>
         <location filename="messages.cpp" line="70"/>
@@ -2312,37 +2312,37 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="../src/io_ply/io_ply_writer.cpp" line="67"/>
         <source>Line that will appear in header</source>
-        <translation type="unfinished"></translation>
+        <translation>将写入文件头的文本行</translation>
     </message>
     <message>
         <location filename="../src/io_ply/io_ply_writer.cpp" line="78"/>
         <source>targetFormat</source>
-        <translation type="unfinished">目标格式</translation>
+        <translation>目标格式</translation>
     </message>
     <message>
         <location filename="../src/io_ply/io_ply_writer.cpp" line="79"/>
         <source>writeColors</source>
-        <translation type="unfinished"></translation>
+        <translation>写入颜色</translation>
     </message>
     <message>
         <location filename="../src/io_ply/io_ply_writer.cpp" line="80"/>
         <source>defaultColor</source>
-        <translation type="unfinished"></translation>
+        <translation>默认颜色</translation>
     </message>
     <message>
         <location filename="../src/io_ply/io_ply_writer.cpp" line="81"/>
         <source>comment</source>
-        <translation type="unfinished"></translation>
+        <translation>注释</translation>
     </message>
     <message>
         <location filename="../src/io_ply/io_ply_writer.cpp" line="139"/>
         <source>Failed to open file</source>
-        <translation type="unfinished">打开文件失败</translation>
+        <translation>打开文件失败</translation>
     </message>
     <message>
         <location filename="../src/io_ply/io_ply_writer.cpp" line="152"/>
         <source>Unknown host endianness</source>
-        <translation type="unfinished"></translation>
+        <translation>未知的主机字节序</translation>
     </message>
 </context>
 <context>
@@ -2652,7 +2652,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="../src/measure/measure_display.cpp" line="131"/>
         <source> X{0} Y{1} Z{2}</source>
-        <translation></translation>
+        <translation>X{0} Y{1} Z{2}</translation>
     </message>
     <message>
         <location filename="../src/measure/measure_display.cpp" line="264"/>
@@ -2662,7 +2662,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="../src/measure/measure_display.cpp" line="267"/>
         <source>Ø{0}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ø{0}</translation>
     </message>
     <message>
         <location filename="../src/measure/measure_display.cpp" line="323"/>
@@ -2670,7 +2670,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
         <location filename="../src/measure/measure_display.cpp" line="449"/>
         <location filename="../src/measure/measure_display.cpp" line="486"/>
         <source>{0}: {1}{2}</source>
-        <translation></translation>
+        <translation>{0}：{1}{2}</translation>
     </message>
     <message>
         <location filename="../src/measure/measure_display.cpp" line="328"/>
@@ -2736,7 +2736,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="../src/app/document_tree_node_properties_providers.cpp" line="443"/>
         <source>HasColors</source>
-        <translation>有颜色</translation>
+        <translation>包含颜色</translation>
     </message>
     <message>
         <location filename="../src/app/document_tree_node_properties_providers.cpp" line="444"/>
@@ -2917,7 +2917,7 @@ It can be disabled in order to minimize the size of the resulting file.</source>
     <message>
         <location filename="../src/app/widget_explode_assembly.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口</translation>
     </message>
     <message>
         <location filename="../src/app/widget_explode_assembly.ui" line="42"/>
@@ -2942,7 +2942,7 @@ Last modified: %3</source>
     <message>
         <location filename="../src/app/widget_grid.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="34"/>
@@ -2952,17 +2952,17 @@ Last modified: %3</source>
     <message>
         <location filename="../src/app/widget_grid.ui" line="48"/>
         <source>Plane: XOY</source>
-        <translation>平面： XOY</translation>
+        <translation>平面：XOY</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="53"/>
         <source>Plane: ZOX</source>
-        <translation>平面： ZOX</translation>
+        <translation>平面：ZOX</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="58"/>
         <source>Plane: YOZ</source>
-        <translation>平面： YOZ</translation>
+        <translation>平面：YOZ</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="63"/>
@@ -2995,7 +2995,7 @@ Last modified: %3</source>
         <location filename="../src/app/widget_grid.ui" line="283"/>
         <location filename="../src/app/widget_grid.ui" line="426"/>
         <source>Y</source>
-        <translation></translation>
+        <translation>Y</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="212"/>
@@ -3008,7 +3008,7 @@ Last modified: %3</source>
         <location filename="../src/app/widget_grid.ui" line="361"/>
         <location filename="../src/app/widget_grid.ui" line="413"/>
         <source>X</source>
-        <translation></translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="254"/>
@@ -3025,7 +3025,7 @@ Last modified: %3</source>
         <location filename="../src/app/widget_grid.ui" line="306"/>
         <location filename="../src/app/widget_grid.ui" line="519"/>
         <source>°</source>
-        <translation></translation>
+        <translation>°</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="332"/>
@@ -3042,7 +3042,7 @@ Last modified: %3</source>
     <message>
         <location filename="../src/app/widget_grid.ui" line="433"/>
         <source>Radius</source>
-        <translation>圆半径</translation>
+        <translation>半径</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="463"/>
@@ -3063,12 +3063,12 @@ Last modified: %3</source>
         <location filename="../src/app/widget_grid.ui" line="626"/>
         <location filename="../src/app/widget_grid.ui" line="643"/>
         <source>...</source>
-        <translation></translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="633"/>
         <source>Tenth Color</source>
-        <translation>第十种颜色</translation>
+        <translation>每 10 格网格线颜色</translation>
     </message>
     <message>
         <location filename="../src/app/widget_grid.ui" line="650"/>
@@ -3203,7 +3203,7 @@ Last modified: %3</source>
         <source>
 
 Select files to load and open as distinct documents</source>
-        <translation type="unfinished"></translation>
+        <translation>选择要加载并分别作为独立文档打开的文件</translation>
     </message>
     <message>
         <location filename="../src/app/widget_home_files.cpp" line="127"/>
@@ -3237,7 +3237,7 @@ Create and add an empty document where you can import files</source>
         <location filename="../src/app/widget_home_files.cpp" line="134"/>
         <location filename="../src/app/widget_home_files.cpp" line="141"/>
         <source>%1 %2</source>
-        <translation></translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <location filename="../src/app/widget_home_files.cpp" line="151"/>
@@ -3264,7 +3264,7 @@ Read: %5
     <message>
         <location filename="../src/app/widget_main_control.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口</translation>
     </message>
     <message>
         <location filename="../src/app/widget_main_control.ui" line="106"/>
@@ -3289,24 +3289,24 @@ Read: %5
     <message>
         <location filename="../src/app/widget_main_control.ui" line="392"/>
         <source>X=</source>
-        <translation></translation>
+        <translation>X=</translation>
     </message>
     <message>
         <location filename="../src/app/widget_main_control.ui" line="399"/>
         <location filename="../src/app/widget_main_control.ui" line="420"/>
         <location filename="../src/app/widget_main_control.ui" line="441"/>
         <source>?</source>
-        <translation></translation>
+        <translation>?</translation>
     </message>
     <message>
         <location filename="../src/app/widget_main_control.ui" line="413"/>
         <source>Y=</source>
-        <translation></translation>
+        <translation>Y=</translation>
     </message>
     <message>
         <location filename="../src/app/widget_main_control.ui" line="434"/>
         <source>Z=</source>
-        <translation></translation>
+        <translation>Z=</translation>
     </message>
     <message>
         <location filename="../src/app/widget_main_control.cpp" line="383"/>
@@ -3352,7 +3352,7 @@ File: `%2`</source>
     <message>
         <location filename="../src/app/widget_main_home.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口</translation>
     </message>
 </context>
 <context>
@@ -3365,32 +3365,32 @@ File: `%2`</source>
     <message>
         <location filename="../src/app/widget_measure.ui" line="40"/>
         <source>Square Millimeter(mm²)</source>
-        <translation>平方毫米 (mm²)</translation>
+        <translation>平方毫米（mm²）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="45"/>
         <source>Square Centimeter(cm²)</source>
-        <translation>平方厘米 (cm²)</translation>
+        <translation>平方厘米（cm²）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="50"/>
         <source>Square Meter(m²)</source>
-        <translation>平方米 (m²)</translation>
+        <translation>平方米（m²）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="55"/>
         <source>Square Inch(in²)</source>
-        <translation>平方英寸 (in²)</translation>
+        <translation>平方英寸（in²）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="60"/>
         <source>Square Foot(ft²)</source>
-        <translation>平方英尺 (ft²)</translation>
+        <translation>平方英尺（ft²）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="65"/>
         <source>Square Yard(yd²)</source>
-        <translation>平方码 (yd²)</translation>
+        <translation>平方码（yd²）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="80"/>
@@ -3400,42 +3400,42 @@ File: `%2`</source>
     <message>
         <location filename="../src/app/widget_measure.ui" line="88"/>
         <source>Millimeter(mm)</source>
-        <translation>毫米 (mm)</translation>
+        <translation>毫米（mm）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="93"/>
         <source>Centimeter(cm)</source>
-        <translation>厘米 (cm)</translation>
+        <translation>厘米（cm）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="98"/>
         <source>Meter(m)</source>
-        <translation>米 (m)</translation>
+        <translation>米（m）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="103"/>
         <source>Inch(in)</source>
-        <translation>英寸 (in)</translation>
+        <translation>英寸（in）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="108"/>
         <source>Foot(ft)</source>
-        <translation>英尺 (ft)</translation>
+        <translation>英尺（ft）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="113"/>
         <source>Yard(yd)</source>
-        <translation>英尺 (ft)</translation>
+        <translation>码（yd）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="122"/>
         <source>Degree(°)</source>
-        <translation>度 (°)</translation>
+        <translation>度（°）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="127"/>
         <source>Radian(rad)</source>
-        <translation>弧度 (rad)</translation>
+        <translation>弧度（rad）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="171"/>
@@ -3475,42 +3475,42 @@ File: `%2`</source>
     <message>
         <location filename="../src/app/widget_measure.ui" line="220"/>
         <source>Cubic Millimeter(mm³)</source>
-        <translation>立方毫米 (mm³)</translation>
+        <translation>立方毫米（mm³）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="225"/>
         <source>Cubic Centimeter(cm³)</source>
-        <translation>立方厘米 (cm³)</translation>
+        <translation>立方厘米（cm³）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="230"/>
         <source>Cubic Meter(m³)</source>
-        <translation>立方米 (m³)</translation>
+        <translation>立方米（m³）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="235"/>
         <source>Cubic Inch(in³)</source>
-        <translation>立方英寸 (in³)</translation>
+        <translation>立方英寸（in³）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="240"/>
         <source>Cubic Foot(ft³)</source>
-        <translation>立方英尺 (ft³)</translation>
+        <translation>立方英尺（ft³）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="245"/>
         <source>Liter(L)</source>
-        <translation>升 (L)</translation>
+        <translation>升（L）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="250"/>
         <source>Imperial Gallon(GBgal)</source>
-        <translation>英制加仑 (GBgal)</translation>
+        <translation>英制加仑（GBgal）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="255"/>
         <source>US Gallon(USgal)</source>
-        <translation>美制加仑 (USgal)</translation>
+        <translation>美制加仑（USgal）</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="196"/>
@@ -3530,7 +3530,7 @@ File: `%2`</source>
     <message>
         <location filename="../src/app/widget_measure.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口</translation>
     </message>
     <message>
         <location filename="../src/app/widget_measure.ui" line="135"/>
@@ -3563,7 +3563,7 @@ File: `%2`</source>
     <message>
         <location filename="../src/app/widget_model_tree.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口</translation>
     </message>
 </context>
 <context>
@@ -3599,7 +3599,7 @@ File: `%2`</source>
     <message>
         <location filename="../src/app/widget_properties_editor.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>窗口</translation>
     </message>
     <message>
         <location filename="../src/app/widget_properties_editor.ui" line="58"/>

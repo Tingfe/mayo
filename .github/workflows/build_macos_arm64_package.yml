@@ -71,6 +71,16 @@ jobs:
           QT_PREFIX="$(brew --prefix qt@6)"
           "$QT_PREFIX/bin/macdeployqt" build/mayo.app -always-overwrite -verbose=2
 
+      - name: Verify SVG icon runtime is bundled
+        run: |
+          test -f build/mayo.app/Contents/PlugIns/iconengines/libqsvgicon.dylib
+          test -f build/mayo.app/Contents/Frameworks/QtSvg.framework/Versions/A/QtSvg
+          otool -L build/mayo.app/Contents/PlugIns/iconengines/libqsvgicon.dylib
+          if otool -L build/mayo.app/Contents/PlugIns/iconengines/libqsvgicon.dylib | grep -q "/opt/homebrew/"; then
+            echo "SVG icon plugin still depends on Homebrew QtSvg"
+            exit 1
+          fi
+
       - name: Bundle non-system Homebrew libraries
         shell: bash
         run: |
@@ -276,7 +286,7 @@ jobs:
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[publish-macos]')
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: v0.11.0-dev-macos-arm64-2
+          RELEASE_TAG: v0.11.0-dev-macos-arm64-3
         run: |
           gh --version
           gh release create "$RELEASE_TAG" \
@@ -285,5 +295,5 @@ jobs:
             dist/SHA256SUMS.txt \
             --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
-            --title "Mayo 0.11.0-dev macOS ARM64 (Chinese enhanced, rpath fix)" \
+            --title "Mayo 0.11.0-dev macOS ARM64 (Chinese enhanced, QtSvg fix)" \
             --notes "Personal-use Apple Silicon build from Mayo develop branch. Includes Qt 6, OpenCascade, Assimp runtime dependencies, refined Simplified Chinese translation, ad-hoc code signing, DMG/ZIP packages and SHA-256 checksums. This build is not notarized with an Apple Developer ID."

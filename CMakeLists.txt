@@ -562,16 +562,13 @@ list(
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Svg
 )
 
 if(WIN32 AND QT_VERSION_MAJOR EQUAL 5)
     list(APPEND MayoApp_LinkLibraries Qt5::WinExtras)
 elseif(QT_VERSION_MAJOR EQUAL 6)
     list(APPEND MayoApp_LinkLibraries Qt6::OpenGLWidgets)
-endif()
-
-if(Mayo_PostBuildCopyRuntimeDLLs)
-    list(APPEND MayoApp_LinkLibraries Qt${QT_VERSION_MAJOR}::Svg)
 endif()
 
 if(Mayo_BuildApp)
